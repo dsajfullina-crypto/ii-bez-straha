@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>ИИ без страха</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600&display=swap">
+<style>
+/* Layout: one calm reading column on watercolor paper; the 7 days are a path of dots at the top; palette borrowed from "Тренер навыков" (paper, sage, dusty rose, terracotta thread) */
+:root {
+  --bg: #F5F0E8;
+  --surface: #FFFCF7;
+  --surface-2: #EDE5D8;
+  --ink: #2F2B28;
+  --muted: #6B635C;
+  --line: #E3D9CA;
+  --accent: #B4504A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F1DED9;
+  --sage: #A3B5A0;
+  --sage-soft: #DCE4D8;
+  --sage-ink: #3E5844;
+  --sand: #E7C9A9;
+  --sand-soft: #F6EAD9;
+  --sand-ink: #8A5A2B;
+  --mark: #F3D9B1;
+  --stain: .42;
+  --f-display: "Unbounded", "Manrope", system-ui, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --fs: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #232925; --surface: #2E3530; --surface-2: #3A433C; --ink: #EDE7DD; --muted: #B9B2A7; --line: #46504A;
+    --accent: #E39085; --accent-ink: #2A1A18; --accent-soft: #4A3431;
+    --sage: #A3B5A0; --sage-soft: #34433A; --sage-ink: #C3D5BF;
+    --sand: #E7C9A9; --sand-soft: #463A2C; --sand-ink: #EBCFAE; --mark: #5E4A2C; --stain: .14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #232925; --surface: #2E3530; --surface-2: #3A433C; --ink: #EDE7DD; --muted: #B9B2A7; --line: #46504A;
+  --accent: #E39085; --accent-ink: #2A1A18; --accent-soft: #4A3431;
+  --sage: #A3B5A0; --sage-soft: #34433A; --sage-ink: #C3D5BF;
+  --sand: #E7C9A9; --sand-soft: #463A2C; --sand-ink: #EBCFAE; --mark: #5E4A2C; --stain: .14;
+  color-scheme: dark;
+}
+html { font-size: var(--fs); }
+html.fs-l { --fs: 20px; }
+html.fs-xl { --fs: 23px; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 1rem; line-height: 1.6;
+  font-weight: 500; -webkit-text-size-adjust: 100%; overflow-x: hidden;
+}
+* { box-sizing: border-box; }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+h1, h2 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; line-height: 1.2; margin: 0; letter-spacing: -.01em; }
+h3 { margin: 0; }
+p { margin: 0; }
+
+.stain { position: fixed; border-radius: 50%; filter: blur(48px); opacity: var(--stain); pointer-events: none; z-index: 0; }
+.stain.s1 { width: 340px; height: 280px; background: var(--sage); top: -90px; right: -110px; }
+.stain.s2 { width: 300px; height: 260px; background: var(--accent-soft); bottom: -60px; left: -120px; }
+.top, .map, main, footer { position: relative; z-index: 1; }
+
+.wrap { max-width: 780px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Header */
+.top .wrap { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "brand fsz" "progress progress"; gap: 12px 16px; padding-block: 18px 6px; align-items: center; }
+.brand { grid-area: brand; display: flex; flex-direction: column; min-width: 0; }
+.brand b { font-family: var(--f-display); font-size: 1.2rem; font-weight: 600; line-height: 1.2; }
+.brand span { font-size: .8rem; color: var(--muted); }
+.progress { grid-area: progress; display: flex; align-items: center; gap: 12px; }
+.bar { flex: 1; height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .5s ease; }
+.progress small { font-size: .8rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+@media (max-width: 480px) { .brand b { font-size: 1.02rem; } .brand span { display: none; } .top .wrap { padding-block: 14px 4px; } }
+.fsz { grid-area: fsz; display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 3px; }
+.fsz button { font: inherit; font-weight: 700; background: transparent; border: 0; color: var(--muted); border-radius: 99px; min-width: 40px; height: 36px; cursor: pointer; line-height: 1; }
+.fsz button:nth-child(1) { font-size: 13px; } .fsz button:nth-child(2) { font-size: 16px; } .fsz button:nth-child(3) { font-size: 20px; }
+.fsz button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* Day map */
+.map { padding-block: 14px 4px; }
+.map ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.map a { display: flex; flex-direction: column; gap: 2px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 10px 12px; min-height: 66px; position: relative; }
+.map a small { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-weight: 700; }
+.map a span { font-size: .84rem; font-weight: 600; line-height: 1.3; }
+.map a.done { background: var(--sage-soft); border-color: var(--sage-soft); }
+.map a.done small { color: var(--sage-ink); }
+.map a.done small::after { content: " ✓"; }
+.map a.on { border-color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 640px) {
+  .map ol { grid-template-columns: repeat(8, 1fr); gap: 6px; }
+  .map a { min-height: 0; aspect-ratio: 1; padding: 0; border-radius: 50%; align-items: center; justify-content: center; max-width: 46px; margin: 0 auto; width: 100%; }
+  .map a small, .map a span { display: none; }
+  .map a::before { content: attr(data-n); font-weight: 700; font-size: .95rem; font-variant-numeric: tabular-nums; }
+  .map a[data-day="files"]::before { font-size: .62rem; letter-spacing: .02em; }
+  .map a.done::before { content: "✓"; color: var(--sage-ink); }
+  .map a.on::before { content: attr(data-n); color: var(--accent); }
+}
+
+/* Lesson */
+main { padding-block: 8px 56px; }
+.lesson { display: none; }
+.lesson.active { display: block; }
+.lesson > header { padding-block: 22px 26px; margin-bottom: 26px; display: grid; gap: 12px; border-bottom: 1.5px solid var(--line); }
+.eyebrow { font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--accent); font-weight: 700; }
+.lesson h1 { font-size: clamp(1.55rem, 5vw, 2.25rem); }
+.lead { font-size: 1.08rem; color: var(--muted); max-width: 60ch; }
+.meta { font-size: .84rem; color: var(--muted); }
+.lesson section { display: grid; gap: 14px; margin-bottom: 38px; }
+.lesson h2 { font-size: clamp(1.15rem, 3.6vw, 1.4rem); }
+.lesson p, .lesson li { max-width: 66ch; }
+.lesson ul, .lesson ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.lesson ul li::marker { color: var(--accent); }
+ol.steps { counter-reset: s; list-style: none; padding-left: 0 !important; gap: 10px !important; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2.2em 1fr; gap: 12px; align-items: start; }
+ol.steps > li::before { content: counter(s); width: 2.2em; height: 2.2em; border-radius: 50%; background: var(--sage-soft); color: var(--sage-ink); font-weight: 700; display: grid; place-items: center; font-size: .88rem; }
+
+.note { border-radius: 20px; padding: 18px 20px; display: grid; gap: 8px; }
+.note b.t { font-size: .76rem; text-transform: uppercase; letter-spacing: .08em; }
+.note ul { padding-left: 1.2em; }
+.note.tip { background: var(--sage-soft); } .note.tip b.t { color: var(--sage-ink); }
+.note.warn { background: var(--accent-soft); } .note.warn b.t { color: var(--accent); }
+.task { border: 1.5px dashed var(--accent); background: var(--surface); border-radius: 20px; padding: 20px; display: grid; gap: 12px; }
+.task b.t { font-size: .76rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+.task label { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.task input { width: 1.25em; height: 1.25em; margin-top: .22em; accent-color: var(--accent); flex: none; }
+.task input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--sage); }
+
+.tablebox { overflow-x: auto; border: 1.5px solid var(--line); border-radius: 20px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+@media (max-width: 640px) {
+  .tablebox { border: 0; background: transparent; overflow: visible; }
+  .tablebox table, .tablebox tbody, .tablebox tr, .tablebox td { display: block; width: 100%; }
+  .tablebox thead { display: none; }
+  .tablebox tr { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 6px 4px; margin-bottom: 10px; }
+  .tablebox td { border: 0; padding: 6px 14px; }
+  .tablebox td:first-child { font-size: 1rem; }
+  .tablebox td[data-label]:not(:first-child)::before { content: attr(data-label); display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; margin-bottom: 1px; }
+}
+.risk { display: inline-block; font-size: .74rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+.risk.lo { background: var(--sage-soft); color: var(--sage-ink); }
+.risk.mid { background: var(--sand-soft); color: var(--sand-ink); }
+.risk.hi { background: var(--accent-soft); color: var(--accent); }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pair > div { border-radius: 18px; padding: 14px 18px; min-width: 0; display: grid; gap: 6px; align-content: start; }
+.pair .bad { background: var(--surface-2); } .pair .good { background: var(--sage-soft); }
+.pair b { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+.pair .bad b { color: var(--muted); } .pair .good b { color: var(--sage-ink); }
+.pair .bad p { color: var(--muted); }
+@media (max-width: 600px) { .pair { grid-template-columns: 1fr; } }
+
+.prompt { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 16px 18px; display: grid; gap: 10px; margin-bottom: 12px; }
+.prompt .ptitle { font-weight: 700; }
+.prompt .ptext { font-size: .95rem; white-space: pre-wrap; border-left: 3px solid var(--sage); padding-left: 14px; }
+.prompt mark { background: var(--mark); color: inherit; border-radius: 4px; padding: 0 3px; }
+.prompt .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.prompt .where { font-size: .8rem; color: var(--muted); flex: 1 1 200px; }
+.btn { font: inherit; font-weight: 700; font-size: .92rem; border-radius: 99px; padding: 12px 22px; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); min-height: 48px; display: inline-flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; gap: 8px; }
+.btn.solid { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { padding: 7px 16px; min-height: 38px; font-size: .84rem; border-color: var(--accent); color: var(--accent); }
+.btn.small.ok { background: var(--sage-soft); border-color: var(--sage-soft); color: var(--sage-ink); }
+.btn:active { transform: scale(.98); }
+
+.cat { font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--accent); font-weight: 700; margin: 26px 0 10px; }
+
+.partner { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.plink { display: grid; gap: 2px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1.5px solid var(--accent); border-radius: 18px; padding: 14px 18px; min-width: 0; }
+.plink small { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 700; }
+.plink span { font-weight: 700; font-size: .9rem; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .partner { grid-template-columns: 1fr; } }
+
+/* Prompt builder */
+.builder { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 20px; display: grid; gap: 14px; }
+.builder label { display: grid; gap: 4px; font-weight: 700; font-size: .9rem; }
+.builder label small { font-weight: 500; color: var(--muted); }
+.builder input, .builder textarea { font: inherit; font-size: .95rem; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); width: 100%; }
+.builder textarea { min-height: 76px; resize: vertical; }
+.builder output { display: block; white-space: pre-wrap; background: var(--sage-soft); border-radius: 14px; padding: 16px; font-size: .95rem; min-height: 3em; }
+
+/* Quiz */
+.quiz { display: grid; gap: 14px; }
+.q { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 8px; }
+.q p { font-weight: 700; }
+.q label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; padding: 8px 10px; border-radius: 12px; }
+.q input { margin-top: .32em; accent-color: var(--accent); flex: none; width: 1.1em; height: 1.1em; }
+.q label.right { background: var(--sage-soft); }
+.q label.wrong { background: var(--accent-soft); }
+.q .why { font-size: .88rem; color: var(--muted); padding-left: 10px; }
+.result { font-weight: 700; font-size: 1.05rem; }
+
+.finish { text-align: center; border-radius: 24px; padding: 28px 20px; display: grid; gap: 8px; justify-items: center; background: var(--sage-soft); margin-top: 24px; }
+.finish h2 { font-size: 1.5rem; }
+
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 28px; margin-top: 12px; }
+.nav .btn.solid { flex: 1 1 260px; max-width: 420px; margin-left: auto; }
+.nav .back { font-weight: 700; color: var(--muted); text-decoration: none; padding: 12px 4px; }
+
+.intro { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 18px 20px; display: grid; gap: 10px; margin-bottom: 30px; }
+.intro ul { padding-left: 1.2em; }
+
+.files { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.file { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.file b { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.file p { font-size: .92rem; color: var(--muted); }
+.file .btn { justify-self: start; }
+@media (max-width: 600px) { .files { grid-template-columns: 1fr; } }
+
+footer { color: var(--muted); font-size: .8rem; padding-block: 24px 40px; border-top: 1.5px solid var(--line); }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 99px; font-size: .9rem; font-weight: 700; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 20; max-width: calc(100% - 32px); text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.print-only { display: none; }
+
+/* ---------- Print = PDF guide ---------- */
+@page { size: A4; margin: 16mm 16mm 18mm; }
+@page :first { margin: 0; }
+@media print {
+  :root, :root[data-theme="dark"] {
+    --bg: #FFFFFF; --surface: #FFFFFF; --surface-2: #F3EDE3; --ink: #2F2B28; --muted: #6B635C; --line: #E3D9CA;
+    --accent: #B4504A; --accent-ink: #fff; --accent-soft: #F6E6E2; --sage: #A3B5A0; --sage-soft: #E3EADF; --sage-ink: #3E5844;
+    --sand: #E7C9A9; --sand-soft: #F8EEE1; --sand-ink: #8A5A2B; --mark: #F3D9B1; color-scheme: light;
+  }
+  html { --fs: 10.5pt !important; }
+  body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #fff; overflow: visible; }
+  .stain, .top, .map, .nav, .no-print, .toast, .copy, .lesson[data-id="files"], .builder-wrap, .quiz-wrap, .intro { display: none !important; }
+  .print-only { display: block; }
+  .wrap { max-width: none; padding: 0; }
+  main { padding: 0; }
+  .lesson { display: block !important; break-before: page; }
+  .lesson[data-id="files"] { display: none !important; }
+  .lesson > header { padding-block: 0 14px; margin-bottom: 16px; gap: 8px; }
+  .lesson h1 { font-size: 21pt; }
+  .lesson h2 { font-size: 13pt; }
+  .lesson section { display: block; margin-bottom: 16px; }
+  .lesson section > * + * { margin-top: 9px; }
+  .note, .task, .intro { padding: 12px 16px; gap: 6px; }
+  .prompt { padding: 10px 14px; gap: 6px; margin-bottom: 8px; }
+  .cat { margin: 14px 0 8px; }
+  th, td { padding: 7px 10px; }
+  ol.steps { gap: 6px !important; }
+  .lesson ul { gap: 5px; }
+  .prompt, .note, .task, .pair > div, table tr, .q, ol.steps > li, .plink { break-inside: avoid; }
+  h2 { break-after: avoid; }
+  .tablebox { overflow: visible; border-radius: 12px; }
+  table { font-size: 9.5pt; }
+  .cover { height: 296mm; position: relative; overflow: hidden; display: flex !important; flex-direction: column; justify-content: space-between; padding: 28mm 22mm 20mm; background: #F5F0E8; }
+  .cover .blob { position: absolute; border-radius: 50%; filter: blur(30px); opacity: .55; }
+  .cover .b1 { width: 130mm; height: 110mm; background: #A3B5A0; top: -30mm; right: -40mm; }
+  .cover .b2 { width: 120mm; height: 100mm; background: #D8AFA8; bottom: -20mm; left: -40mm; }
+  .cover > * { position: relative; }
+  .cover .kicker { font-size: 10pt; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); font-weight: 700; }
+  .cover .ttl { font-family: var(--f-display); font-size: 40pt; font-weight: 600; line-height: 1.05; margin-top: 6mm; }
+  .cover .sub { font-size: 15pt; margin-top: 8mm; max-width: 125mm; color: var(--muted); }
+  .cover ol { font-size: 11.5pt; line-height: 1.5; padding: 0; list-style: none; display: grid; gap: 3mm; counter-reset: c; background: rgba(255,252,247,.85); border-radius: 6mm; padding: 7mm 8mm; }
+  .cover ol li { counter-increment: c; display: grid; grid-template-columns: 9mm 1fr; }
+  .cover ol li::before { content: counter(c); font-family: var(--f-display); color: var(--accent); font-weight: 600; }
+  .cover .foot { font-size: 8.5pt; color: var(--muted); }
+  footer { border: 0; padding-top: 10mm; }
+}
+</style>
+
+<div class="stain s1" aria-hidden="true"></div><div class="stain s2" aria-hidden="true"></div>
+<div class="top">
+  <div class="wrap">
+    <div class="brand"><b>ИИ без страха</b><span>Нейросеть-помощник за 7 дней</span></div>
+    <div class="fsz" role="group" aria-label="Размер текста">
+      <button type="button" data-fs="" aria-pressed="true" title="Обычный текст">А</button>
+      <button type="button" data-fs="fs-l" aria-pressed="false" title="Крупный текст">А</button>
+      <button type="button" data-fs="fs-xl" aria-pressed="false" title="Очень крупный текст">А</button>
+    </div>
+    <div class="progress" aria-label="Прогресс курса">
+      <div class="bar"><i id="barFill"></i></div>
+      <small id="barText">0 из 7 уроков</small>
+    </div>
+  </div>
+</div>
+
+<nav class="map wrap" aria-label="Уроки курса">
+  <ol>
+    <li><a href="#day1" data-day="1" data-n="1" aria-label="День 1"><small>День 1</small><span>Что такое нейросеть</span></a></li>
+    <li><a href="#day2" data-day="2" data-n="2" aria-label="День 2"><small>День 2</small><span>GigaChat и Алиса</span></a></li>
+    <li><a href="#day3" data-day="3" data-n="3" aria-label="День 3"><small>День 3</small><span>ChatGPT и Claude</span></a></li>
+    <li><a href="#day4" data-day="4" data-n="4" aria-label="День 4"><small>День 4</small><span>Оплата подписки</span></a></li>
+    <li><a href="#day5" data-day="5" data-n="5" aria-label="День 5"><small>День 5</small><span>Как правильно спрашивать</span></a></li>
+    <li><a href="#day6" data-day="6" data-n="6" aria-label="День 6"><small>День 6</small><span>Помощь в быту</span></a></li>
+    <li><a href="#day7" data-day="7" data-n="7" aria-label="День 7"><small>День 7</small><span>Безопасность и итог</span></a></li>
+    <li><a href="#files" data-day="files" data-n="PDF" aria-label="Материалы"><small>Материалы</small><span>PDF-гайд и чек-лист</span></a></li>
+  </ol>
+</nav>
+
+<main class="wrap">
+
+<!-- Print cover -->
+<div class="print-only cover">
+  <span class="blob b1"></span><span class="blob b2"></span>
+  <div>
+    <div class="kicker">Мини-курс для начинающих</div>
+    <div class="ttl">ИИ без страха</div>
+    <p class="sub">Нейросеть-помощник за 7 дней. Пошаговый гайд для тех, кто начинает с нуля.</p>
+  </div>
+  <ol>
+    <li>Что такое нейросеть и чем она полезна</li>
+    <li>Выбираем нейросеть. Регистрация в GigaChat и Алисе</li>
+    <li>ChatGPT и Claude: как получить доступ</li>
+    <li>Оплата подписки: все способы и их риски</li>
+    <li>Как правильно спрашивать: формула запроса</li>
+    <li>Нейросеть в быту: 15 готовых запросов</li>
+    <li>Безопасность и что делать дальше</li>
+  </ol>
+  <p class="foot">Цены, тарифы и интерфейсы указаны по состоянию на октябрь 2026 года и могут меняться. Перед оплатой проверяйте актуальные условия на сайте сервиса.</p>
+</div>
+
+<!-- ============ DAY 1 ============ -->
+<article class="lesson" data-id="day1" data-day="1">
+  <header>
+    <span class="eyebrow">День 1 из 7</span>
+    <h1>Что такое нейросеть и чем она полезна</h1>
+    <p class="lead">Разберёмся без сложных слов: что это за программа, что она умеет, а где ей пока нельзя доверять.</p>
+    <span class="meta">≈ 10 минут чтения</span>
+  </header>
+
+  <div class="intro no-print">
+    <b>Как проходить курс</b>
+    <ul>
+      <li>По одному уроку в день, 10–20 минут. В конце каждого урока небольшое задание.</li>
+      <li>Дочитали урок — нажмите «Урок пройден» внизу. Прогресс сохранится на этом устройстве.</li>
+      <li>Текст мелковат? Нажмите на большую букву «А» вверху страницы.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Простыми словами</h2>
+    <p>Нейросеть — это программа-собеседник. Вы пишете ей обычным языком, как в мессенджере, а она отвечает. Она «прочитала» огромное количество книг, статей и сайтов, поэтому может объяснить, посоветовать, написать текст или составить план.</p>
+    <p>Представьте очень начитанного помощника, который всегда на связи, никогда не устаёт и не обижается на глупые вопросы. Но иногда он ошибается, причём уверенным тоном. Об этом ниже.</p>
+  </section>
+
+  <section>
+    <h2>Что нейросеть умеет</h2>
+    <ul>
+      <li><b>Отвечать на вопросы</b> и объяснять сложное простыми словами: от пунктов договора до домашнего задания внука.</li>
+      <li><b>Писать тексты:</b> письмо в управляющую компанию, поздравление, объявление о продаже, жалобу в магазин.</li>
+      <li><b>Составлять планы и списки:</b> меню на неделю, список покупок, план поездки, график полива рассады.</li>
+      <li><b>Переводить</b> с любого языка и на любой язык.</li>
+      <li><b>Разбирать фотографии:</b> квитанцию, этикетку лекарства, инструкцию к технике.</li>
+      <li><b>Помогать думать:</b> взвесить «за» и «против», подготовиться к разговору, придумать идею подарка.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Где нужна осторожность</h2>
+    <div class="note warn">
+      <b class="t">Важно запомнить</b>
+      <p>Нейросеть может <b>выдумывать факты</b>: даты, цифры, законы, названия. Это называют «галлюцинациями». Всё важное (здоровье, деньги, документы) проверяйте по официальным источникам или у специалиста.</p>
+    </div>
+    <ul>
+      <li>Она не заменяет врача, юриста и бухгалтера. Зато помогает подготовить к ним вопросы.</li>
+      <li>Она не знает ничего о вас, пока вы сами не расскажете.</li>
+      <li>Она может не знать самых свежих новостей.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Четыре мифа</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Миф</th><th>Как на самом деле</th></tr></thead>
+      <tbody>
+        <tr><td>«Это сложно, нужно быть программистом»</td><td>Вы просто пишете сообщения, как в WhatsApp или Telegram. Можно даже говорить голосом.</td></tr>
+        <tr><td>«Нужно знать английский»</td><td>Все нейросети из этого курса отлично понимают русский язык.</td></tr>
+        <tr><td>«Это дорого»</td><td>У всех есть бесплатные версии. Российские GigaChat и Алиса бесплатны для обычных задач.</td></tr>
+        <tr><td>«Нейросеть всё про меня узнает»</td><td>Она знает только то, что вы ей напишете. Простые правила безопасности разберём в День 7.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Мини-словарик</h2>
+    <div class="tablebox"><table>
+      <tbody>
+        <tr><td><b>Чат</b></td><td>Окно переписки с нейросетью.</td></tr>
+        <tr><td><b>Запрос (промпт)</b></td><td>Ваше сообщение: вопрос или задание.</td></tr>
+        <tr><td><b>Новый чат</b></td><td>Чистый лист. Нейросеть «забывает» предыдущий разговор. Удобно для новой темы.</td></tr>
+        <tr><td><b>Модель</b></td><td>«Версия мозга» нейросети. Новые модели умнее старых.</td></tr>
+        <tr><td><b>Лимит</b></td><td>Сколько сообщений можно отправить бесплатно за день или за несколько часов.</td></tr>
+        <tr><td><b>Подписка</b></td><td>Платный тариф: больше сообщений и более умная модель.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <div class="task" data-task="1">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t1a"> <span>Запишите на листке 3 дела, которые отнимают у вас время или вызывают сложности (например: «что приготовить», «написать письмо», «разобраться в квитанции»).</span></label>
+    <label><input type="checkbox" id="t1b"> <span>Подумайте, кому из близких тоже пригодился бы такой помощник.</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="btn solid next" href="#day2">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 2 ============ -->
+<article class="lesson" data-id="day2" data-day="2">
+  <header>
+    <span class="eyebrow">День 2 из 7</span>
+    <h1>Выбираем нейросеть и регистрируемся</h1>
+    <p class="lead">Сравним четыре популярные нейросети и заведём первую, российскую. Это бесплатно и займёт 5 минут.</p>
+    <span class="meta">≈ 15 минут, нужен телефон</span>
+  </header>
+
+  <section>
+    <h2>Кто есть кто</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Нейросеть</th><th>Чья</th><th>Работает в России</th><th>Цена</th><th>Сильные стороны</th></tr></thead>
+      <tbody>
+        <tr><td><b>GigaChat</b></td><td>Сбер</td><td>Да</td><td>Бесплатно</td><td>Вход по номеру телефона, хорошо знает российские реалии, рисует картинки</td></tr>
+        <tr><td><b>Алиса</b></td><td>Яндекс</td><td>Да</td><td>Базово бесплатно, расширенные функции за доплату к Яндекс Плюс</td><td>Есть в колонке, телефоне и Яндекс Браузере, удобно говорить голосом</td></tr>
+        <tr><td><b>ChatGPT</b></td><td>OpenAI, США</td><td>Официально нет</td><td>Есть бесплатная версия; Plus около $20 в месяц</td><td>Самая известная, много функций: голос, картинки, файлы</td></tr>
+        <tr><td><b>Claude</b></td><td>Anthropic, США</td><td>Официально нет</td><td>Есть бесплатная версия; Pro около $20 в месяц</td><td>Лучше всех пишет тексты, аккуратно работает с длинными документами</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note tip">
+      <b class="t">Совет</b>
+      <p>Начните с <b>GigaChat</b> или <b>Алисы</b>: бесплатно, без хлопот с оплатой. Когда освоитесь и поймёте, что хочется большего, переходите к ChatGPT или Claude (уроки 3 и 4).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Регистрация в GigaChat</h2>
+    <ol class="steps">
+      <li><span>Откройте сайт <b>giga.chat</b> в браузере или установите приложение <b>GigaChat</b> из RuStore, App Store или Google Play.</span></li>
+      <li><span>Нажмите «Войти».</span></li>
+      <li><span>Выберите вход через <b>Сбер ID</b> (если есть СберБанк Онлайн) или по <b>номеру телефона</b>.</span></li>
+      <li><span>Введите код из СМС.</span></li>
+      <li><span>Готово. Внизу экрана появится поле для сообщения. Напишите туда вопрос и нажмите стрелку.</span></li>
+    </ol>
+    <p class="meta">Также GigaChat есть ботом в Telegram и ВКонтакте: найдите официальный бот по названию «GigaChat» через поиск.</p>
+  </section>
+
+  <section>
+    <h2>Регистрация в Алисе</h2>
+    <ol class="steps">
+      <li><span>Откройте сайт <b>alice.yandex.ru</b>, приложение <b>«Алиса»</b> или Яндекс Браузер (значок Алисы на главной).</span></li>
+      <li><span>Войдите с Яндекс ID. Если вы пользуетесь Яндекс Почтой, Такси или Маркетом, он у вас уже есть. Если нет, нажмите «Создать ID» и следуйте подсказкам.</span></li>
+      <li><span>Напишите вопрос в поле внизу или нажмите на микрофон и скажите его голосом.</span></li>
+    </ol>
+  </section>
+
+  <div class="note tip">
+    <b class="t">Если что-то выглядит иначе</b>
+    <p>Сервисы часто обновляют дизайн. Кнопки могут называться чуть по-другому, но логика всегда та же: «Войти» → телефон или почта → код → поле для сообщения.</p>
+  </div>
+
+  <section>
+    <h2>Ваш первый запрос</h2>
+    <div class="prompt">
+      <div class="ptext">Привет! Я только начинаю пользоваться нейросетями. Расскажи простыми словами, чем ты можешь помочь мне в быту. Приведи 5 примеров.</div>
+      <div class="row"><span class="where">Скопируйте и отправьте в GigaChat или Алису</span><button class="btn small copy" type="button">Скопировать</button></div>
+    </div>
+  </section>
+
+  <div class="task" data-task="2">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t2a"> <span>Зарегистрируйтесь в GigaChat или Алисе.</span></label>
+    <label><input type="checkbox" id="t2b"> <span>Отправьте первый запрос из примера выше.</span></label>
+    <label><input type="checkbox" id="t2c"> <span>Задайте вопрос про одно из 3 дел, которые вы записали вчера.</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day1">← Назад</a>
+    <a class="btn solid next" href="#day3">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 3 ============ -->
+<article class="lesson" data-id="day3" data-day="3">
+  <header>
+    <span class="eyebrow">День 3 из 7</span>
+    <h1>ChatGPT и Claude: как получить доступ</h1>
+    <p class="lead">Две самые сильные зарубежные нейросети. Расскажем, как в них зарегистрироваться и какие есть варианты для жителей России.</p>
+    <span class="meta">≈ 15 минут</span>
+  </header>
+
+  <section>
+    <h2>Сначала главное</h2>
+    <div class="note warn">
+      <b class="t">Ограничение</b>
+      <p>Компании OpenAI (ChatGPT) и Anthropic (Claude) официально не работают с пользователями из России. Их сайты регистрируют и обслуживают только тех, кто находится в стране, где сервис доступен, и не принимают российские банковские карты.</p>
+    </div>
+    <p>Поэтому у жителей России есть три пути:</p>
+    <div class="tablebox"><table>
+      <thead><tr><th>Путь</th><th>Кому подходит</th><th>Плюсы</th><th>Минусы</th></tr></thead>
+      <tbody>
+        <tr><td><b>1. Регистрация за границей</b></td><td>Тем, кто живёт или часто бывает в другой стране</td><td>Свой официальный аккаунт, все функции</td><td>Нужно находиться в стране, где сервис работает; для оплаты нужна иностранная карта</td></tr>
+        <tr><td><b>2. Сервисы-агрегаторы и Telegram-боты</b></td><td>Новичкам, которым нужен быстрый доступ</td><td>Работают в России, оплата рублями, регистрация за минуту, часто несколько нейросетей в одном месте</td><td>Наценка, иногда урезанные функции, ваша переписка проходит через посредника</td></tr>
+        <tr><td><b>3. Помощь близких за границей</b></td><td>Тем, у кого есть родственники или друзья в другой стране</td><td>Официальный аккаунт</td><td>Зависите от другого человека; аккаунт должен быть на вашу почту</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Регистрация в ChatGPT</h2>
+    <p class="meta">Для тех, кто находится в стране, где ChatGPT доступен.</p>
+    <ol class="steps">
+      <li><span>Откройте сайт <b>chatgpt.com</b> или скачайте официальное приложение <b>ChatGPT</b> (разработчик — OpenAI).</span></li>
+      <li><span>Нажмите «Sign up» («Зарегистрироваться»).</span></li>
+      <li><span>Введите почту и придумайте пароль. Проще всего нажать «Continue with Google» и войти через Gmail.</span></li>
+      <li><span>Откройте письмо от OpenAI и подтвердите почту.</span></li>
+      <li><span>Укажите имя и дату рождения. Иногда сервис просит номер телефона для подтверждения.</span></li>
+      <li><span>Чтобы включить русский язык меню: значок профиля → Settings (Настройки) → General → Language → Русский.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Регистрация в Claude</h2>
+    <ol class="steps">
+      <li><span>Откройте сайт <b>claude.ai</b> или скачайте официальное приложение <b>Claude</b> (разработчик — Anthropic).</span></li>
+      <li><span>Введите почту или нажмите «Continue with Google».</span></li>
+      <li><span>Откройте письмо от Anthropic и нажмите на ссылку или введите код.</span></li>
+      <li><span>Подтвердите номер телефона кодом из СМС, если сервис попросит.</span></li>
+      <li><span>Укажите, как к вам обращаться. Готово, можно писать на русском.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Как выбрать агрегатор или бота</h2>
+    <p>Таких сервисов много, и среди них есть ненадёжные. Перед оплатой проверьте:</p>
+    <ul>
+      <li>На сайте есть <b>оферта</b> и реквизиты компании (ИНН, ОГРН). Их можно проверить на сайте налоговой.</li>
+      <li>Есть <b>бесплатный пробный период</b> или бесплатные сообщения, чтобы попробовать до оплаты.</li>
+      <li>Понятные тарифы: сколько сообщений входит, какие нейросети доступны.</li>
+      <li>Отзывы на независимых площадках, а не только на самом сайте.</li>
+      <li>Сервис работает больше года.</li>
+    </ul>
+    <div class="note warn">
+      <b class="t">Помните</b>
+      <p>Всё, что вы пишете агрегатору, проходит через его серверы. Не отправляйте туда паспортные данные, номера карт, пароли и медицинские документы с ФИО.</p>
+    </div>
+  </section>
+
+  <div class="task" data-task="3">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t3a"> <span>Решите: хватает ли вам пока GigaChat или Алисы? Если да, этот шаг можно отложить.</span></label>
+    <label><input type="checkbox" id="t3b"> <span>Если хотите ChatGPT или Claude, выберите один из трёх путей из таблицы.</span></label>
+    <label><input type="checkbox" id="t3c"> <span>Задайте один и тот же вопрос двум разным нейросетям и сравните ответы.</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day2">← Назад</a>
+    <a class="btn solid next" href="#day4">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 4 ============ -->
+<article class="lesson" data-id="day4" data-day="4">
+  <header>
+    <span class="eyebrow">День 4 из 7</span>
+    <h1>Оплата подписки: все способы и их риски</h1>
+    <p class="lead">Когда платить не нужно, когда стоит, и как оплатить зарубежную нейросеть из России, не попав к мошенникам.</p>
+    <span class="meta">≈ 15 минут</span>
+  </header>
+
+  <section>
+    <h2>Нужно ли вообще платить?</h2>
+    <p>Для бытовых задач бесплатных версий чаще всего хватает. Платная подписка нужна, если:</p>
+    <ul>
+      <li>вы каждый день упираетесь в лимит сообщений;</li>
+      <li>нужно работать с большими документами, таблицами, многостраничными PDF;</li>
+      <li>вы используете нейросеть для работы и важна максимальная точность.</li>
+    </ul>
+    <div class="note tip">
+      <b class="t">Простое правило</b>
+      <p>Если за неделю вы упёрлись в лимит бесплатной версии больше трёх раз, пора подумать о подписке. Если нет, не тратьте деньги.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Сколько стоит</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Сервис</th><th>Бесплатно</th><th>Платно</th></tr></thead>
+      <tbody>
+        <tr><td><b>GigaChat</b></td><td>Всё основное</td><td>Для обычных пользователей платить не нужно</td></tr>
+        <tr><td><b>Алиса</b></td><td>Основные возможности</td><td>Расширенные функции — платная опция к подписке Яндекс Плюс, оплата российской картой. Актуальную цену смотрите в приложении</td></tr>
+        <tr><td><b>ChatGPT</b></td><td>Ограниченное число сообщений</td><td>Plus около $20 в месяц; в части стран есть более дешёвый тариф Go</td></tr>
+        <tr><td><b>Claude</b></td><td>Ограниченное число сообщений</td><td>Pro около $20 в месяц или около $17 в месяц при оплате за год</td></tr>
+      </tbody>
+    </table></div>
+    <p class="meta">Цены на октябрь 2026 года. Перед оплатой проверьте их на сайте сервиса. Посредники берут сверху от 10 до 50%.</p>
+  </section>
+
+  <section>
+    <h2>Семь способов оплатить ChatGPT или Claude из России</h2>
+    <p>Напрямую российской картой не получится: платёжные системы этих сервисов отклоняют карты российских банков. Вот какие варианты используют на практике.</p>
+    <div class="tablebox"><table>
+      <thead><tr><th>Способ</th><th>Как это работает</th><th>Минусы</th><th>Риск</th></tr></thead>
+      <tbody>
+        <tr><td><b>1. Иностранная карта на ваше имя</b></td><td>Открываете карту в банке другой страны (например, Казахстана, Киргизии, Армении) и платите на сайте сервиса напрямую</td><td>Обычно нужна поездка и документы; плата за обслуживание</td><td><span class="risk lo">низкий</span></td></tr>
+        <tr><td><b>2. Помощь родных за границей</b></td><td>Человек оплачивает подписку своей картой на вашем аккаунте, вы возвращаете деньги</td><td>Зависите от другого человека; продлением управлять неудобно</td><td><span class="risk lo">низкий</span></td></tr>
+        <tr><td><b>3. Агрегатор в рублях</b></td><td>Платите российской картой или по СБП и пользуетесь ChatGPT или Claude через сайт либо бота агрегатора (урок 3)</td><td>Это не официальная подписка; наценка; переписка идёт через посредника</td><td><span class="risk lo">низкий</span>–<span class="risk mid">средний</span></td></tr>
+        <tr><td><b>4. Виртуальная зарубежная карта</b></td><td>Сервис выпускает вам виртуальную иностранную карту, вы пополняете её рублями и платите на сайте нейросети</td><td>Комиссия 5–15%; сервис может закрыться вместе с остатком денег</td><td><span class="risk mid">средний</span></td></tr>
+        <tr><td><b>5. Сервис-посредник по оплате подписок</b></td><td>Платите посреднику рублями, он оформляет подписку на ваш аккаунт</td><td>Наценка; иногда просят логин и пароль от аккаунта</td><td><span class="risk mid">средний</span></td></tr>
+        <tr><td><b>6. App Store или Google Play другой страны</b></td><td>Аккаунт магазина приложений другой страны пополняется подарочными картами, подписка оформляется в приложении</td><td>Сложно настроить; подарочные карты покупают у перепродавцов</td><td><span class="risk mid">средний</span></td></tr>
+        <tr><td><b>7. Продавцы на маркетплейсах цифровых товаров</b></td><td>Покупаете у частного продавца активацию подписки или готовый аккаунт</td><td>Много мошенников; аккаунт могут заблокировать, деньги не вернут</td><td><span class="risk hi">высокий</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Пример: виртуальная карта Zarub</h2>
+    <p>Zarub — сервис виртуальных зарубежных карт (способ 4 из таблицы). Карту оформляют на сайте или в Telegram-боте и пополняют рублями. Ею можно оплачивать ChatGPT, Claude и другие зарубежные сервисы.</p>
+    <div class="partner">
+      <a class="plink" href="https://zarub.io/?ref=DfsalB" target="_blank" rel="noopener"><small>Сайт</small><span>zarub.io/?ref=DfsalB</span></a>
+      <a class="plink" href="https://t.me/zarub_robot?start=ref_DfsalB" target="_blank" rel="noopener"><small>Telegram-бот</small><span>t.me/zarub_robot?start=ref_DfsalB</span></a>
+    </div>
+    <div class="note warn">
+      <b class="t">Перед оформлением</b>
+      <p>Посмотрите на сайте актуальные тарифы: сколько стоит выпуск карты, какая комиссия за пополнение и обслуживание. Держите на карте только ту сумму, которая нужна для оплаты подписки.</p>
+    </div>
+    <p class="meta">Ссылки партнёрские: автор курса получает бонус, если вы оформите карту по ним.</p>
+  </section>
+
+  <section>
+    <h2>Как не попасть к мошенникам</h2>
+    <ul>
+      <li><b>Не покупайте «общие» аккаунты</b>, где один логин на несколько человек. Вашу переписку увидят другие, а аккаунт быстро заблокируют.</li>
+      <li><b>Не верьте</b> предложениям вроде «вечная подписка за 500 ₽». Подписка стоит около $20 в месяц, дешевле честно не бывает.</li>
+      <li><b>Не переводите деньги</b> на карту частного лица без гарантий и договора.</li>
+      <li><b>Выбирайте продавцов</b> с высоким рейтингом, сотнями отзывов и гарантией возврата.</li>
+      <li><b>Если отдали пароль</b> посреднику для активации, сразу после неё смените пароль.</li>
+      <li><b>Платите отдельной картой</b> с небольшим балансом, а не основной зарплатной.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Как отменить подписку</h2>
+    <p>Подписка продлевается автоматически. Если она больше не нужна, отмените её заранее, хотя бы за день до списания.</p>
+    <ul>
+      <li><b>ChatGPT:</b> профиль → Настройки → Аккаунт (или «Подписка») → «Управление» → «Отменить подписку».</li>
+      <li><b>Claude:</b> профиль → Settings → Billing → «Cancel».</li>
+      <li><b>Через App Store или Google Play:</b> отменяется в настройках подписок самого магазина приложений.</li>
+      <li><b>Яндекс Плюс:</b> в разделе «Подписки» Яндекс ID.</li>
+    </ul>
+  </section>
+
+  <div class="task" data-task="4">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t4a"> <span>Посчитайте, сколько раз за эти дни вы упирались в лимит бесплатной версии.</span></label>
+    <label><input type="checkbox" id="t4b"> <span>Если подписка нужна, выберите способ из таблицы с низким или средним риском.</span></label>
+    <label><input type="checkbox" id="t4c"> <span>Поставьте в телефоне напоминание за 2 дня до даты продления.</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day3">← Назад</a>
+    <a class="btn solid next" href="#day5">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 5 ============ -->
+<article class="lesson" data-id="day5" data-day="5">
+  <header>
+    <span class="eyebrow">День 5 из 7</span>
+    <h1>Как правильно спрашивать</h1>
+    <p class="lead">От того, как вы зададите вопрос, зависит половина результата. Одна простая формула сделает ответы в разы лучше.</p>
+    <span class="meta">≈ 15 минут, с практикой</span>
+  </header>
+
+  <section>
+    <h2>Главный секрет</h2>
+    <p>Говорите с нейросетью как с толковым помощником, который <b>ничего о вас не знает</b>. Чем больше подробностей, тем точнее ответ.</p>
+  </section>
+
+  <section>
+    <h2>Формула запроса: Кто + Что + Детали + Как</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Часть</th><th>Что написать</th><th>Пример</th></tr></thead>
+      <tbody>
+        <tr><td><b>Кто</b></td><td>Кем должна быть нейросеть</td><td>«Ты — опытный диетолог»</td></tr>
+        <tr><td><b>Что</b></td><td>Что нужно сделать</td><td>«Составь меню на неделю»</td></tr>
+        <tr><td><b>Детали</b></td><td>Ваши условия и обстоятельства</td><td>«Семья из 3 человек, бюджет 6000 ₽, у мужа диабет 2 типа»</td></tr>
+        <tr><td><b>Как</b></td><td>В каком виде нужен ответ</td><td>«Таблицей по дням, в конце — общий список покупок»</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Было и стало</h2>
+    <div class="pair">
+      <div class="bad"><b>Плохо</b><p>Что приготовить?</p></div>
+      <div class="good"><b>Хорошо</b><p>Предложи 3 ужина из курицы и овощей, каждый готовится не дольше 40 минут. Без грибов. Дай пошаговый рецепт.</p></div>
+    </div>
+    <div class="pair">
+      <div class="bad"><b>Плохо</b><p>Напиши поздравление.</p></div>
+      <div class="good"><b>Хорошо</b><p>Напиши тёплое поздравление с 65-летием для коллеги Ирины Петровны. Она любит театр и внуков. 4–5 предложений, без пафоса.</p></div>
+    </div>
+    <div class="pair">
+      <div class="bad"><b>Плохо</b><p>Что такое ОСАГО?</p></div>
+      <div class="good"><b>Хорошо</b><p>Объясни простыми словами, как пожилому человеку без машины: что такое ОСАГО и чем оно отличается от КАСКО. Приведи пример из жизни.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Волшебные уточнения</h2>
+    <p>Первый ответ не понравился? Не начинайте заново, просто попросите исправить:</p>
+    <ul>
+      <li>«Сделай короче» / «Объясни ещё проще»</li>
+      <li>«Дай 3 других варианта»</li>
+      <li>«Сделай тон вежливее» / «...построже»</li>
+      <li>«Оформи списком» / «...таблицей»</li>
+      <li>«Ты ошибся в пункте 2, исправь»</li>
+    </ul>
+    <div class="note tip">
+      <b class="t">Приём для сложных задач</b>
+      <p>Допишите в конце запроса: <b>«Прежде чем отвечать, задай мне 3 уточняющих вопроса. К каждому предложи 3–4 варианта ответа»</b>. Нейросеть сама спросит, что ей нужно знать, а вам останется выбрать подходящий вариант или написать свой.</p>
+    </div>
+    <div class="note tip">
+      <b class="t">Новая тема — новый чат</b>
+      <p>Нажимайте «Новый чат», когда переходите к другому вопросу. Так нейросеть не будет путаться в старом разговоре.</p>
+    </div>
+  </section>
+
+  <section class="builder-wrap no-print">
+    <h2>Конструктор запроса</h2>
+    <p>Заполните поля, а конструктор соберёт запрос. Скопируйте его и отправьте в свою нейросеть.</p>
+    <div class="builder">
+      <label for="b-who">Кто <small>кем быть нейросети</small><input id="b-who" type="text" value="опытный повар"></label>
+      <label for="b-what">Что <small>какая задача</small><input id="b-what" type="text" value="составь меню ужинов на 5 будних дней"></label>
+      <label for="b-details">Детали <small>ваши обстоятельства</small><textarea id="b-details">семья из 3 человек, бюджет 3000 ₽ на неделю, без рыбы, готовить не больше 40 минут</textarea></label>
+      <label for="b-how">Как <small>в каком виде нужен ответ</small><input id="b-how" type="text" value="таблицей по дням, в конце — общий список покупок"></label>
+      <output id="b-out" for="b-who b-what b-details b-how"></output>
+      <div class="row" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn solid" type="button" id="b-copy">Скопировать запрос</button></div>
+    </div>
+  </section>
+
+  <div class="task" data-task="5">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t5a"> <span>Соберите в конструкторе запрос для одного из своих 3 дел.</span></label>
+    <label><input type="checkbox" id="t5b"> <span>Отправьте его и попросите улучшить ответ хотя бы одним уточнением.</span></label>
+    <label><input type="checkbox" id="t5c"> <span>Попробуйте приём «задай мне 3 уточняющих вопроса с вариантами ответов».</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day4">← Назад</a>
+    <a class="btn solid next" href="#day6">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 6 ============ -->
+<article class="lesson" data-id="day6" data-day="6">
+  <header>
+    <span class="eyebrow">День 6 из 7</span>
+    <h1>Нейросеть в быту: 15 готовых запросов</h1>
+    <p class="lead">Копируйте, заменяйте текст в жёлтых квадратных скобках на свой и отправляйте. Работает в любой нейросети из курса.</p>
+    <span class="meta">≈ 20 минут практики</span>
+  </header>
+
+  <p class="cat">Кухня и дом</p>
+  <div class="prompt">
+    <span class="ptitle">Ужин из того, что есть в холодильнике</span>
+    <div class="ptext">У меня есть: <mark>[курица, картошка, морковь, сметана, 3 яйца]</mark>. Предложи 3 блюда на ужин, которые можно приготовить за 40 минут. Для каждого дай пошаговый рецепт.</div>
+    <div class="row"><span class="where">Можно просто сфотографировать полки холодильника и приложить фото</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Меню на неделю и список покупок</span>
+    <div class="ptext">Составь меню на 7 дней (завтрак, обед, ужин) для семьи из <mark>[2 взрослых и ребёнка 8 лет]</mark>. Бюджет <mark>[7000 ₽]</mark>. Ограничения: <mark>[без свинины]</mark>. Оформи таблицей, а в конце дай список покупок, разбитый по отделам магазина.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Ошибка бытовой техники</span>
+    <div class="ptext">Моя <mark>[стиральная машина Bosch Serie 4]</mark> показывает ошибку <mark>[E18]</mark>. Что это значит? Что я могу безопасно проверить самостоятельно, а когда нужно вызывать мастера?</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+
+  <p class="cat">Документы и письма</p>
+  <div class="prompt">
+    <span class="ptitle">Заявление в управляющую компанию</span>
+    <div class="ptext">Помоги составить вежливое, но твёрдое заявление в управляющую компанию. Проблема: <mark>[в подъезде 2 недели не горит свет на 3 этаже]</mark>. Мой адрес: <mark>[ул. Ленина, д. 5, кв. 12]</mark>. Прошу устранить в течение 5 рабочих дней. Оформи как официальное заявление с шапкой, датой и местом для подписи.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Претензия в магазин</span>
+    <div class="ptext">Помоги написать претензию в магазин. Я купил(а) <mark>[электрический чайник]</mark> <mark>[10 дней назад]</mark>, он <mark>[перестал включаться]</mark>. Хочу вернуть деньги. Сошлись на закон «О защите прав потребителей». Тон вежливый, деловой.</div>
+    <div class="row"><span class="where">Номера статей закона перед отправкой сверьте в КонсультантПлюс или Гаранте</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Разобраться в договоре или квитанции</span>
+    <div class="ptext">Объясни простыми словами, что означает этот текст и на что мне обратить внимание. Есть ли тут подвох? Текст: <mark>[вставьте пункт договора или фото квитанции]</mark></div>
+    <div class="row"><span class="where">Перед отправкой фото закройте ФИО, адрес и номер счёта</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Объявление о продаже</span>
+    <div class="ptext">Напиши объявление для Авито о продаже <mark>[детской коляски Tutis, 2 года, в хорошем состоянии, есть дождевик]</mark>. Цена <mark>[12 000 ₽]</mark>. Сделай цепляющий заголовок и короткое честное описание. Дай 3 варианта заголовка.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+
+  <p class="cat">Семья и праздники</p>
+  <div class="prompt">
+    <span class="ptitle">Поздравление</span>
+    <div class="ptext">Напиши тёплое поздравление с <mark>[60-летием]</mark> для <mark>[моей сестры Ольги]</mark>. Она любит <mark>[сад и путешествия]</mark>. 5–6 предложений, без пафоса и избитых фраз. Дай 2 варианта: один для открытки, один для тоста.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Помочь ребёнку с уроками</span>
+    <div class="ptext">Объясни <mark>[как складывать дроби с разными знаменателями]</mark> так, чтобы понял <mark>[ребёнок 10 лет]</mark>. Используй пример с пиццей или яблоками. Не давай готовые ответы, а дай 3 задачки для тренировки и ответы к ним отдельно в конце.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Идея подарка</span>
+    <div class="ptext">Помоги выбрать подарок для <mark>[мужа, 45 лет, любит рыбалку и гаджеты]</mark>. Бюджет до <mark>[5000 ₽]</mark>. Дай 7 идей с примерной ценой и объяснением, почему подойдёт.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+
+  <p class="cat">Здоровье, деньги, дача, поездки</p>
+  <div class="prompt">
+    <span class="ptitle">Подготовиться к визиту к врачу</span>
+    <div class="ptext">Вот мои результаты анализа крови: <mark>[вставьте показатели без ФИО]</mark>. Объясни простыми словами, что означает каждый показатель. Какие вопросы мне стоит задать врачу?</div>
+    <div class="row"><span class="where">Нейросеть не ставит диагноз и не назначает лечение. Решения принимает только врач</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Семейный бюджет</span>
+    <div class="ptext">Помоги распределить семейный бюджет. Доход в месяц: <mark>[85 000 ₽]</mark>. Обязательные расходы: <mark>[ипотека 25 000, коммуналка 7000, кружки ребёнка 5000]</mark>. Хочу откладывать <mark>[10 000 ₽]</mark> в месяц. Предложи распределение по категориям таблицей и 5 советов, где можно сэкономить.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Календарь дачника</span>
+    <div class="ptext">У меня дача в <mark>[Подмосковье]</mark>. Хочу вырастить <mark>[томаты, перцы и огурцы]</mark> через рассаду. Составь календарь по месяцам: когда сеять, пикировать, высаживать в грунт или теплицу и подкармливать.</div>
+    <div class="row"><span class="where"></span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">План поездки</span>
+    <div class="ptext">Составь план поездки в <mark>[Казань]</mark> на <mark>[3 дня]</mark> для <mark>[пары 50+, не любим долго ходить пешком]</mark>. Бюджет на развлечения и еду <mark>[20 000 ₽]</mark>. Распиши по дням: что посмотреть, где недорого поесть, как добираться между местами.</div>
+    <div class="row"><span class="where">Часы работы и цены перед поездкой проверьте на официальных сайтах</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+  <div class="prompt">
+    <span class="ptitle">Проверить подозрительное сообщение</span>
+    <div class="ptext">Мне пришло такое сообщение: <mark>[вставьте текст СМС или письма]</mark>. Похоже ли это на мошенничество? По каким признакам это видно и что мне делать?</div>
+    <div class="row"><span class="where">По ссылкам из подозрительных сообщений не переходите</span><button class="btn small copy" type="button">Скопировать</button></div>
+  </div>
+
+  <div class="task" data-task="6" style="margin-top:28px">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t6a"> <span>Выполните 3 запроса из списка, подставив свои данные.</span></label>
+    <label><input type="checkbox" id="t6b"> <span>Попробуйте отправить фотографию (этикетку, квитанцию без личных данных, содержимое холодильника).</span></label>
+    <label><input type="checkbox" id="t6c"> <span>Поделитесь одним полезным запросом с близким человеком.</span></label>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day5">← Назад</a>
+    <a class="btn solid next" href="#day7">Урок пройден, дальше →</a>
+  </div>
+</article>
+
+<!-- ============ DAY 7 ============ -->
+<article class="lesson" data-id="day7" data-day="7">
+  <header>
+    <span class="eyebrow">День 7 из 7</span>
+    <h1>Безопасность и что делать дальше</h1>
+    <p class="lead">Простые правила, которые защитят ваши данные и деньги, и план, чтобы нейросеть стала привычным помощником.</p>
+    <span class="meta">≈ 15 минут, в конце тест</span>
+  </header>
+
+  <section>
+    <h2>Никогда не отправляйте нейросети</h2>
+    <div class="note warn">
+      <b class="t">Стоп-список</b>
+      <ul>
+        <li>Паспортные данные, СНИЛС, ИНН</li>
+        <li>Номера банковских карт, CVV-код, коды из СМС</li>
+        <li>Пароли от почты, Госуслуг, банка</li>
+        <li>Медицинские документы и фото документов с ФИО и адресом. Если нужно что-то разобрать, сначала закройте личные данные</li>
+        <li>Чужие персональные данные без согласия человека</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Всегда проверяйте</h2>
+    <ul>
+      <li><b>Лекарства и дозировки</b> — только у врача или в официальной инструкции.</li>
+      <li><b>Законы и номера статей</b> — в КонсультантПлюс, Гаранте или на Госуслугах.</li>
+      <li><b>Цифры, даты, цены, адреса</b> — на официальных сайтах.</li>
+    </ul>
+    <p>Удобный приём: спросите нейросеть «Насколько ты уверен в этом ответе? Где это можно проверить?»</p>
+  </section>
+
+  <section>
+    <h2>Мошенники и нейросети</h2>
+    <ul>
+      <li><b>Фальшивые приложения.</b> Скачивайте только официальные: GigaChat (Сбер), Алиса (Яндекс), ChatGPT (OpenAI), Claude (Anthropic). Смотрите на имя разработчика.</li>
+      <li><b>«Нейросеть заработает за вас»</b> — это обман. Никто не платит за то, что вы «подключились к ИИ».</li>
+      <li><b>Подделка голоса.</b> Мошенники умеют подделывать голоса родственников. Если «сын» звонит и просит срочно перевести деньги, положите трубку и перезвоните ему сами по известному номеру.</li>
+      <li><b>Фальшивые видео</b> со «знаменитостями», которые рекламируют инвестиции или лекарства, часто сделаны нейросетью.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>План на 30 дней</h2>
+    <p>Привычка появляется от регулярности. Каждый день давайте нейросети одну маленькую задачу:</p>
+    <div class="tablebox"><table>
+      <thead><tr><th>Неделя</th><th>Задача на каждый день</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td>Спрашивайте, что приготовить, и просите объяснить новости или непонятные слова</td></tr>
+        <tr><td><b>2</b></td><td>Пишите с её помощью сообщения, письма и поздравления</td></tr>
+        <tr><td><b>3</b></td><td>Отправляйте фото: этикетки, инструкции, растения на даче, вещи для объявлений</td></tr>
+        <tr><td><b>4</b></td><td>Планируйте: бюджет, поездку, ремонт, подготовку к празднику</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="quiz-wrap no-print">
+    <h2>Итоговый тест</h2>
+    <p>Шесть вопросов, чтобы проверить себя. Результат видите только вы.</p>
+    <form class="quiz" id="quiz">
+      <div class="q" data-a="b"><p>1. Нейросеть уверенно назвала номер статьи закона. Что делать?</p>
+        <label><input type="radio" name="q1" value="a"> Сразу использовать в претензии</label>
+        <label><input type="radio" name="q1" value="b"> Проверить в КонсультантПлюс или Гаранте</label>
+        <label><input type="radio" name="q1" value="c"> Спросить ещё раз — если повторит, значит, верно</label>
+        <span class="why" hidden>Нейросеть может выдумывать факты, даже повторяя их. Проверяйте по официальным источникам.</span></div>
+      <div class="q" data-a="c"><p>2. Что из этого можно отправить нейросети?</p>
+        <label><input type="radio" name="q2" value="a"> Фото паспорта, чтобы заполнить анкету</label>
+        <label><input type="radio" name="q2" value="b"> Код из СМС от банка</label>
+        <label><input type="radio" name="q2" value="c"> Список продуктов в холодильнике</label>
+        <span class="why" hidden>Личные документы, коды и пароли — никогда. Бытовые вопросы — пожалуйста.</span></div>
+      <div class="q" data-a="a"><p>3. С какой нейросети проще всего начать в России?</p>
+        <label><input type="radio" name="q3" value="a"> GigaChat или Алиса</label>
+        <label><input type="radio" name="q3" value="b"> Сразу купить ChatGPT Plus</label>
+        <label><input type="radio" name="q3" value="c"> С той, что предлагают в рекламе «заработай на ИИ»</label>
+        <span class="why" hidden>Российские нейросети бесплатны и работают без сложностей с оплатой.</span></div>
+      <div class="q" data-a="b"><p>4. Какой запрос даст лучший ответ?</p>
+        <label><input type="radio" name="q4" value="a"> «Напиши поздравление»</label>
+        <label><input type="radio" name="q4" value="b"> «Напиши поздравление с 70-летием для папы, он любит рыбалку, 5 предложений, тепло и с юмором»</label>
+        <span class="why" hidden>Формула «Кто + Что + Детали + Как»: чем больше подробностей, тем лучше результат.</span></div>
+      <div class="q" data-a="c"><p>5. Продавец предлагает «вечную подписку ChatGPT за 500 ₽». Это...</p>
+        <label><input type="radio" name="q5" value="a"> Выгодная акция</label>
+        <label><input type="radio" name="q5" value="b"> Нормальная цена</label>
+        <label><input type="radio" name="q5" value="c"> Почти наверняка обман</label>
+        <span class="why" hidden>Подписка стоит около $20 в месяц. «Вечных» подписок не существует.</span></div>
+      <div class="q" data-a="a"><p>6. Звонит «внук» его голосом и просит срочно перевести деньги. Что делать?</p>
+        <label><input type="radio" name="q6" value="a"> Положить трубку и перезвонить внуку самостоятельно по известному номеру</label>
+        <label><input type="radio" name="q6" value="b"> Перевести — голос же его</label>
+        <span class="why" hidden>Нейросети умеют подделывать голоса. Всегда перезванивайте сами.</span></div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <button class="btn solid" type="submit">Проверить ответы</button>
+        <span class="result" id="quizResult" aria-live="polite"></span>
+      </div>
+    </form>
+  </section>
+
+  <div class="task" data-task="7">
+    <b class="t">Задание дня</b>
+    <label><input type="checkbox" id="t7a"> <span>Пройдите итоговый тест.</span></label>
+    <label><input type="checkbox" id="t7b"> <span>Сохраните чек-лист (раздел «Материалы») и повесьте его на видное место.</span></label>
+    <label><input type="checkbox" id="t7c"> <span>Начните план на 30 дней с завтрашнего дня.</span></label>
+  </div>
+
+  <div class="finish no-print" id="finish" hidden>
+    <h2>Курс пройден!</h2>
+    <p>Все 7 уроков позади. Теперь у вас есть помощник, который всегда под рукой.</p>
+  </div>
+
+  <div class="nav no-print">
+    <a class="back" href="#day6">← Назад</a>
+    <a class="btn solid next" href="#files">Курс пройден, к материалам →</a>
+  </div>
+</article>
+
+<!-- ============ FILES ============ -->
+<article class="lesson" data-id="files" data-day="files">
+  <header>
+    <span class="eyebrow">Материалы</span>
+    <h1>Гайд и чек-лист в PDF</h1>
+    <p class="lead">Чтобы распечатать, сохранить в телефоне или отправить близким.</p>
+  </header>
+  <div class="files">
+    <div class="file">
+      <b>PDF-гайд</b>
+      <p>Все 7 уроков в одном файле: регистрация, оплата, формула запроса, 15 готовых запросов, правила безопасности.</p>
+      <a class="btn" href="pdf/ii-bez-straha-gaid.pdf" target="_blank" rel="noopener">Открыть гайд</a>
+    </div>
+    <div class="file">
+      <b>Чек-лист</b>
+      <p>Две страницы: задания на 7 дней, формула запроса, 10 запросов на каждый день и стоп-список безопасности.</p>
+      <a class="btn" href="pdf/ii-bez-straha-chek-list.pdf" target="_blank" rel="noopener">Открыть чек-лист</a>
+    </div>
+  </div>
+  <div class="nav no-print">
+    <a class="back" href="#day7">← К уроку 7</a>
+    <a class="btn" href="#day1">К началу курса</a>
+  </div>
+</article>
+
+</main>
+
+<footer class="wrap">
+  <p>«ИИ без страха» — мини-курс для начинающих. Цены, тарифы и интерфейсы указаны по состоянию на октябрь 2026 года и могут меняться. Курс не является рекламой упомянутых сервисов. Названия ChatGPT, Claude, GigaChat и Алиса принадлежат их владельцам.</p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var KEY = 'iibs-v1';
+  var state = { done: [], tasks: {}, fs: '' };
+  try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = Object.assign(state, s); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 1800); }
+
+  // Font size
+  var fsBtns = document.querySelectorAll('.fsz button');
+  function applyFs() {
+    document.documentElement.classList.remove('fs-l', 'fs-xl');
+    if (state.fs) document.documentElement.classList.add(state.fs);
+    fsBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.fs === state.fs)); });
+  }
+  fsBtns.forEach(function (b) { b.addEventListener('click', function () { state.fs = b.dataset.fs; applyFs(); save(); }); });
+  applyFs();
+
+  // Lessons routing
+  var lessons = document.querySelectorAll('.lesson');
+  var chips = document.querySelectorAll('.map a');
+  function show(id) {
+    if (!document.querySelector('.lesson[data-id="' + id + '"]')) id = 'day1';
+    lessons.forEach(function (l) { l.classList.toggle('active', l.dataset.id === id); });
+    chips.forEach(function (c) { c.classList.toggle('on', c.getAttribute('href') === '#' + id); });
+  }
+  function onHash(scroll) {
+    show((location.hash || '#day1').slice(1));
+    if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  window.addEventListener('hashchange', function () { onHash(true); });
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (a.classList.contains('next')) return; // handled below, then navigates via hashchange
+      var id = a.getAttribute('href').slice(1);
+      if (!document.querySelector('.lesson[data-id="' + id + '"]')) return;
+      e.preventDefault();
+      try { history.pushState(null, '', '#' + id); } catch (err) {}
+      show(id); window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+  });
+
+  // Progress
+  function renderProgress() {
+    var n = state.done.length;
+    document.getElementById('barFill').style.width = (n / 7 * 100) + '%';
+    document.getElementById('barText').textContent = n + ' из 7 уроков';
+    chips.forEach(function (c) { c.classList.toggle('done', state.done.indexOf(c.dataset.day) > -1); });
+    document.getElementById('finish').hidden = n < 7;
+  }
+  document.querySelectorAll('.nav .next').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var d = b.closest('.lesson').dataset.day;
+      if (state.done.indexOf(d) < 0) { state.done.push(d); save(); toast(d === '7' ? 'Курс пройден!' : 'Урок ' + d + ' пройден'); }
+      renderProgress();
+    });
+  });
+
+  // Tables become cards on phones: each cell needs its column name
+  document.querySelectorAll('.tablebox table').forEach(function (t) {
+    var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function (th) { return th.textContent; });
+    if (!heads.length) return;
+    t.querySelectorAll('tbody tr').forEach(function (tr) {
+      Array.prototype.forEach.call(tr.children, function (td, i) { if (heads[i]) td.setAttribute('data-label', heads[i]); });
+    });
+  });
+
+  // Task checkboxes
+  document.querySelectorAll('.task input[type=checkbox]').forEach(function (cb) {
+    cb.checked = !!state.tasks[cb.id];
+    cb.addEventListener('change', function () { state.tasks[cb.id] = cb.checked; save(); });
+  });
+
+  // Copy
+  function copyText(text, el) {
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      toast('Текст выделен — нажмите «Копировать»');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('Скопировано'); }, fallback);
+    } else fallback();
+  }
+  document.querySelectorAll('.prompt .copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var el = b.closest('.prompt').querySelector('.ptext');
+      copyText(el.innerText.trim(), el);
+      b.textContent = '✓ Скопировано'; b.classList.add('ok');
+      setTimeout(function () { b.textContent = 'Скопировать'; b.classList.remove('ok'); }, 2000);
+    });
+  });
+
+  // Builder
+  var bIds = ['b-who', 'b-what', 'b-details', 'b-how'];
+  var bOut = document.getElementById('b-out');
+  function build() {
+    var v = bIds.map(function (id) { return document.getElementById(id).value.trim(); });
+    var parts = [];
+    if (v[0]) parts.push('Ты — ' + v[0] + '.');
+    if (v[1]) parts.push(v[1].charAt(0).toUpperCase() + v[1].slice(1) + '.');
+    if (v[2]) parts.push('Учти: ' + v[2] + '.');
+    if (v[3]) parts.push('Оформи ответ так: ' + v[3] + '.');
+    bOut.textContent = parts.join(' ') || 'Заполните хотя бы одно поле';
+  }
+  bIds.forEach(function (id) { document.getElementById(id).addEventListener('input', build); });
+  build();
+  document.getElementById('b-copy').addEventListener('click', function () { copyText(bOut.textContent, bOut); });
+
+  // Quiz
+  document.getElementById('quiz').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var qs = this.querySelectorAll('.q'), right = 0, answered = 0;
+    qs.forEach(function (q) {
+      var a = q.dataset.a, picked = q.querySelector('input:checked');
+      q.querySelectorAll('label').forEach(function (l) { l.classList.remove('right', 'wrong'); });
+      if (picked) answered++;
+      q.querySelectorAll('input').forEach(function (inp) {
+        if (inp.value === a) inp.parentNode.classList.add('right');
+        else if (inp.checked) inp.parentNode.classList.add('wrong');
+      });
+      if (picked && picked.value === a) right++;
+      q.querySelector('.why').hidden = false;
+    });
+    var msg = right + ' из ' + qs.length + ' верно. ';
+    msg += right === qs.length ? 'Отлично, вы готовы!' : right >= 4 ? 'Хороший результат!' : 'Загляните ещё раз в уроки 4 и 7.';
+    if (answered < qs.length) msg = 'Ответьте на все вопросы. ' + msg;
+    document.getElementById('quizResult').textContent = msg;
+  });
+
+  renderProgress();
+  if (!location.hash) {
+    var first = ['1','2','3','4','5','6','7'].filter(function (d) { return state.done.indexOf(d) < 0; })[0];
+    show(first ? 'day' + first : 'day1');
+  } else onHash(false);
+  window.scrollTo(0, 0);
+})();
+</script>
+
+</body>
+</html>
